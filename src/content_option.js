@@ -1,7 +1,7 @@
 const logotext = "WW";
 const meta = {
     title: "Wendy Wang",
-    description: "I’m John Doe data scientist _ Full stack devloper,currently working in Berlin",
+    description: "Software Engineer, Classical Pianist, currently working in Seattle, Washington",
 };
 
 const introdata = {
@@ -11,13 +11,13 @@ const introdata = {
         second: "I code cool websites",
         third: "I develop mobile apps",
     },
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed at nisl euismod urna bibendum",
+    description: "Software Engineer, Classical Pianist, currently working in Seattle, Washington",
     your_img_url: "/headshot.jpg",
 };
 
 const dataabout = {
     title: "abit about my self",
-    aboutme: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent quis dolor id ligula semper elementum feugiat pretium nulla. Nunc non commodo dolor. Nunc mollis dignissim facilisis. Morbi ut magna ultricies.",
+    aboutme: "Software Engineer, Classical Pianist, currently working in Seattle, Washington",
 };
 const worktimeline = [{
         jobtitle: "Designer of week",
