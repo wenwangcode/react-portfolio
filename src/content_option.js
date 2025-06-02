@@ -9,10 +9,10 @@ const introdata = {
     animated: {
         first: "I love coding",
         second: "I code cool websites",
-        third: "I develop mobile apps",
+        third: "I play piano",
     },
     description: "Software Engineer, Classical Pianist, currently working in Seattle, Washington",
-    your_img_url: "/headshot.jpg",
+    your_img_url: "https://dl.dropboxusercontent.com/scl/fi/78ujap48f1gyazk7bb7h0/AmatuerPerformer_WendyWang_Pic.jpg?rlkey=fz61osra14ozu0iwmr1enpmnh&st=wuxhmfon",
 };
 
 const dataabout = {
