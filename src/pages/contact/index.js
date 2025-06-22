@@ -67,21 +67,33 @@ const sendMessage = async () => {
               }}
             >
               {messages.map((msg, i) => (
-                <div
-                  key={i}
-                  style={{
-                  textAlign: msg.role === "user" ? "right" : "left",
-                  marginBottom: "1rem",
-                  backgroundColor: msg.role === "user" ? "#f4f4f6" : "#e6ecf0", // soft gray tones
-                  padding: "8px 12px",
-                  borderRadius: "8px",
-                  display: "inline-block",
-                  color: "#000",
+               <div
+  key={i}
+  style={{
+    display: "flex",
+    justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
+    marginBottom: "10px",
   }}
-                >
-                  <strong>{msg.role === "user" ? "You" : "WendyBot"}:</strong>{" "}
-                  {msg.content}
-                </div>
+>
+  <div
+    style={{
+      backgroundColor: msg.role === "user" ? "#dcf8c6" : "#f0f0f0",
+      padding: "10px 15px",
+      borderRadius: "20px",
+      maxWidth: "75%",
+      wordWrap: "break-word",
+      fontSize: "1rem",
+      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+      color: "#333",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+    }}
+  >
+    <strong style={{ fontSize: "0.85rem", color: "#555" }}>
+      {msg.role === "user" ? "You" : "WendyBot"}
+    </strong>
+    <div style={{ marginTop: "4px" }}>{msg.content}</div>
+  </div>
+</div>
               ))}
               {loading && (
                 <div style={{ fontStyle: "italic" }}>WendyBot is typing...</div>
