@@ -9,33 +9,35 @@ export const ContactUs = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
+const sendMessage = async () => {
+  if (!input.trim()) return;
 
-    const userMessage = { role: "user", content: input };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
-    setLoading(true);
+  const userMessage = { role: "user", content: input };
+  setInput("");
+  setLoading(true);
 
-    try {
-      const res = await fetch("http://localhost:3000/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input }),
-      });
+  try {
+    const res = await fetch("http://localhost:3001/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: input }),
+    });
 
-      const data = await res.json();
-      const botMessage = { role: "assistant", content: data.reply };
-      setMessages((prev) => [...prev, botMessage]);
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "Something went wrong." },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const data = await res.json();
+    console.log("API reply:", data);
+
+    const botMessage = { role: "assistant", content: data.reply };
+    setMessages((prev) => [...prev, userMessage, botMessage]); 
+  } catch (err) {
+    console.error("Fetch failed:", err);
+    setMessages((prev) => [
+      ...prev,
+      { role: "assistant", content: "Something went wrong." },
+    ]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <HelmetProvider>
@@ -68,9 +70,14 @@ export const ContactUs = () => {
                 <div
                   key={i}
                   style={{
-                    textAlign: msg.role === "user" ? "right" : "left",
-                    marginBottom: "1rem",
-                  }}
+                  textAlign: msg.role === "user" ? "right" : "left",
+                  marginBottom: "1rem",
+                  backgroundColor: msg.role === "user" ? "#f4f4f6" : "#e6ecf0", // soft gray tones
+                  padding: "8px 12px",
+                  borderRadius: "8px",
+                  display: "inline-block",
+                  color: "#000",
+  }}
                 >
                   <strong>{msg.role === "user" ? "You" : "WendyBot"}:</strong>{" "}
                   {msg.content}
