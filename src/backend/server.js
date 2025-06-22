@@ -4,6 +4,7 @@ import cors from "cors";
 import { config } from "dotenv";
 import { OpenAI } from "openai";
 import twilio from "twilio";
+import fetch from "node-fetch";
 config();
 
 const app = express();
@@ -38,23 +39,50 @@ app.post("/chat", async (req, res) => {
 
         const reply = completion.choices[0].message.content;
         const fallbackTriggers = [
-            "I'm not sure",
-            "I don't know",
-            "Sorry",
+            "i'm not sure",
+            "i don't know",
+            "sorry",
             "cannot answer",
             "uncertain",
+            "i'm sorry, i don't know the answer to that."
         ];
 
         const needsHelp = fallbackTriggers.some(trigger =>
             reply.toLowerCase().includes(trigger)
         );
+        console.log(`needsHelp ${needsHelp}`);
         if (needsHelp) {
-            await twilioClient.messages.create({
-                body: `WendyBot needs help: "${userMessage}"\nBot reply: "${reply}"`,
-                from: "+19094155302", // Your Twilio number
-                to: "+14253890584",
-            });
+            console.log("⚠️ Bot needs help, sending CallMeBot alert...");
+
+            const phone = process.env.CALLMEBOT_PHONE;
+            const apiKey = process.env.CALLMEBOT_APIKEY;
+            const message = encodeURIComponent(`WendyBot needs help!\nUser asked: "${userMessage}"\nBot reply: "${reply}"`);
+
+            const url = `https://api.callmebot.com/whatsapp.php?phone=${phone}&text=${message}&apikey=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                const result = await response.text();
+                console.log("CallMeBot response:", result);
+            } catch (err) {
+                console.error("CallMeBot error:", err);
+            }
         }
+        /*
+        if (needsHelp) {
+            console.log("needsHelp triggered, sending Twilio message...");
+            try {
+                await twilioClient.messages.create({
+                    body: `WendyBot needs help: "${userMessage}"\nBot reply: "${reply}"`,
+                    from: process.env.TWILIO_PHONE_NUMBER,
+                    to: process.env.ALERT_PHONE_NUMBER
+                });
+            } catch (err) {
+                console.error(" Twilio send error:", err);
+            }
+
+        }
+        */
         res.json({ reply });
     } catch (err) {
         console.error("OpenAI error:", err);
