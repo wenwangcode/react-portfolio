@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./style.css";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { meta } from "../../content_option";
@@ -8,36 +8,42 @@ export const ContactUs = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const chatContainerRef = useRef(null);
 
-const sendMessage = async () => {
-  if (!input.trim()) return;
+  // Scroll to bottom when new message added
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
-  const userMessage = { role: "user", content: input };
-  setInput("");
-  setLoading(true);
+  const sendMessage = async () => {
+    if (!input.trim()) return;
 
-  try {
-    const res = await fetch("http://localhost:3001/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: input }),
-    });
+    const userMessage = { role: "user", content: input };
+    setInput("");
+    setLoading(true);
 
-    const data = await res.json();
-    console.log("API reply:", data);
+    try {
+      const res = await fetch("http://localhost:3001/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: input }),
+      });
 
-    const botMessage = { role: "assistant", content: data.reply };
-    setMessages((prev) => [...prev, userMessage, botMessage]); 
-  } catch (err) {
-    console.error("Fetch failed:", err);
-    setMessages((prev) => [
-      ...prev,
-      { role: "assistant", content: "Something went wrong." },
-    ]);
-  } finally {
-    setLoading(false);
-  }
-};
+      const data = await res.json();
+      const botMessage = { role: "assistant", content: data.reply };
+      setMessages((prev) => [...prev, userMessage, botMessage]);
+    } catch (err) {
+      console.error("Fetch failed:", err);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "Something went wrong." },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <HelmetProvider>
@@ -56,6 +62,7 @@ const sendMessage = async () => {
         <Row className="sec_sp">
           <Col lg="12">
             <div
+              ref={chatContainerRef}
               style={{
                 border: "1px solid #ccc",
                 padding: "1rem",
@@ -67,36 +74,38 @@ const sendMessage = async () => {
               }}
             >
               {messages.map((msg, i) => (
-               <div
-  key={i}
-  style={{
-    display: "flex",
-    justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
-    marginBottom: "10px",
-  }}
->
-  <div
-    style={{
-      backgroundColor: msg.role === "user" ? "#dcf8c6" : "#f0f0f0",
-      padding: "10px 15px",
-      borderRadius: "20px",
-      maxWidth: "75%",
-      wordWrap: "break-word",
-      fontSize: "1rem",
-      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      color: "#333",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-    }}
-  >
-    <strong style={{ fontSize: "0.85rem", color: "#555" }}>
-      {msg.role === "user" ? "You" : "WendyBot"}
-    </strong>
-    <div style={{ marginTop: "4px" }}>{msg.content}</div>
-  </div>
-</div>
+                <div
+                  key={i}
+                  style={{
+                    display: "flex",
+                    justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <div
+                    style={{
+                      backgroundColor: msg.role === "user" ? "#dcf8c6" : "#f0f0f0",
+                      padding: "10px 15px",
+                      borderRadius: "20px",
+                      maxWidth: "75%",
+                      wordWrap: "break-word",
+                      fontSize: "1rem",
+                      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                      color: "#333",
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    <strong style={{ fontSize: "0.85rem", color: "#555" }}>
+                      {msg.role === "user" ? "You" : "WendyBot"}
+                    </strong>
+                    <div style={{ marginTop: "4px" }}>{msg.content}</div>
+                  </div>
+                </div>
               ))}
               {loading && (
-                <div style={{ fontStyle: "italic" }}>WendyBot is typing...</div>
+                <div style={{ fontStyle: "italic", marginTop: "0.5rem" }}>
+                  WendyBot is typing...
+                </div>
               )}
             </div>
             <div className="input-area mt-4 d-flex">
