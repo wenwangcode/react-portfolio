@@ -19,7 +19,7 @@ export const ContactUs = () => {
 
   // SSE for receiving Telegram replies
   useEffect(() => {
-    const eventSource = new EventSource("http://localhost:3001/reply-stream");
+    const eventSource = new EventSource("https://cef6-71-212-135-152.ngrok-free.app/reply-stream");
 
     eventSource.onmessage = (event) => {
       console.log("Received Telegram reply:", event.data);
@@ -27,8 +27,11 @@ export const ContactUs = () => {
       setMessages((prev) => [...prev, botMessage]);
     };
 
+eventSource.onopen = () => {
+  console.log("SSE connection established.");
+};
     eventSource.onerror = (err) => {
-      console.error("SSE error:", err);
+      console.log("SSE error.", JSON.stringify(err));
       eventSource.close();
     };
 
@@ -45,7 +48,7 @@ export const ContactUs = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3001/chat", {
+      const res = await fetch("https://cef6-71-212-135-152.ngrok-free.app/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: input }),

@@ -6,10 +6,9 @@ import { OpenAI } from "openai";
 import twilio from "twilio";
 import fetch from "node-fetch";
 config();
-
 const app = express();
 const port = 3001;
-
+const clients = [];
 app.use(cors());
 app.use(express.json());
 
@@ -94,7 +93,7 @@ app.get("/reply-stream", (req, res) => {
     if (latestReply) {
         res.write(`data: ${latestReply}\n\n`);
     }
-
+    console.log("reply stream:", JSON.stringify(res.body));
     // Store the connection
     clients.push(res);
 
@@ -104,6 +103,8 @@ app.get("/reply-stream", (req, res) => {
             clients.splice(index, 1);
         }
     });
+
+    
 });
 
 app.post("/telegram-webhook", express.json(), (req, res) => {
@@ -120,6 +121,7 @@ app.post("/telegram-webhook", express.json(), (req, res) => {
     }
     res.sendStatus(200);
 });
+
 app.listen(port, () => {
     console.log(`Backend listening on http://localhost:${port}`);
 });
