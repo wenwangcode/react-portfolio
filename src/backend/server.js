@@ -50,39 +50,32 @@ app.post("/chat", async (req, res) => {
         const needsHelp = fallbackTriggers.some(trigger =>
             reply.toLowerCase().includes(trigger)
         );
-        console.log(`needsHelp ${needsHelp}`);
+
         if (needsHelp) {
-            console.log("⚠️ Bot needs help, sending CallMeBot alert...");
+            console.log("Bot needs help, sending Telegram alert...");
 
-            const phone = process.env.CALLMEBOT_PHONE;
-            const apiKey = process.env.CALLMEBOT_APIKEY;
-            const message = encodeURIComponent(`WendyBot needs help!\nUser asked: "${userMessage}"\nBot reply: "${reply}"`);
+            const botToken = process.env.TELEGRAM_BOT_TOKEN;
+            const chatId = process.env.TELEGRAM_CHAT_ID;
+            const message = `WendyBot needs help!\nUser asked: "${userMessage}"\nBot reply: "${reply}"`;
 
-            const url = `https://api.callmebot.com/whatsapp.php?phone=${phone}&text=${message}&apikey=${apiKey}`;
+            const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
 
             try {
-                const response = await fetch(url);
-                const result = await response.text();
-                console.log("CallMeBot response:", result);
-            } catch (err) {
-                console.error("CallMeBot error:", err);
-            }
-        }
-        /*
-        if (needsHelp) {
-            console.log("needsHelp triggered, sending Twilio message...");
-            try {
-                await twilioClient.messages.create({
-                    body: `WendyBot needs help: "${userMessage}"\nBot reply: "${reply}"`,
-                    from: process.env.TWILIO_PHONE_NUMBER,
-                    to: process.env.ALERT_PHONE_NUMBER
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message,
+                    }),
                 });
+                const result = await response.json();
+                console.log("Telegram response:", result);
             } catch (err) {
-                console.error(" Twilio send error:", err);
+                console.error("Telegram send error:", err);
             }
-
         }
-        */
+
         res.json({ reply });
     } catch (err) {
         console.error("OpenAI error:", err);
@@ -90,6 +83,43 @@ app.post("/chat", async (req, res) => {
     }
 });
 
+let latestReply = "";
+
+app.get("/reply-stream", (req, res) => {
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+
+    // Send latest reply immediately if available
+    if (latestReply) {
+        res.write(`data: ${latestReply}\n\n`);
+    }
+
+    // Store the connection
+    clients.push(res);
+
+    req.on("close", () => {
+        const index = clients.indexOf(res);
+        if (index !== -1) {
+            clients.splice(index, 1);
+        }
+    });
+});
+
+app.post("/telegram-webhook", express.json(), (req, res) => {
+    console.log("Webhook payload:", JSON.stringify(req.body, null, 2));
+    const message = req.body.message;
+    if (message && message.text) {
+        console.log(` Reply received from you: ${message.text}`);
+        latestReply = message.text;
+
+        // Push update to all connected clients
+        clients.forEach(clientRes => {
+            clientRes.write(`data: ${latestReply}\n\n`);
+        });
+    }
+    res.sendStatus(200);
+});
 app.listen(port, () => {
-    console.log(`✅ Backend listening on http://localhost:${port}`);
+    console.log(`Backend listening on http://localhost:${port}`);
 });

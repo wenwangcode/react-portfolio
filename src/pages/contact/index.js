@@ -17,6 +17,26 @@ export const ContactUs = () => {
     }
   }, [messages]);
 
+  // SSE for receiving Telegram replies
+  useEffect(() => {
+    const eventSource = new EventSource("http://localhost:3001/reply-stream");
+
+    eventSource.onmessage = (event) => {
+      console.log("Received Telegram reply:", event.data);
+      const botMessage = { role: "assistant", content: event.data };
+      setMessages((prev) => [...prev, botMessage]);
+    };
+
+    eventSource.onerror = (err) => {
+      console.error("SSE error:", err);
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, []);
+
   const sendMessage = async () => {
     if (!input.trim()) return;
 
