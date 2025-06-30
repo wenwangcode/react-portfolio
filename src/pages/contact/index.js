@@ -17,29 +17,6 @@ export const ContactUs = () => {
     }
   }, [messages]);
 
-  // SSE for receiving Telegram replies
-  useEffect(() => {
-    const eventSource = new EventSource("https://cef6-71-212-135-152.ngrok-free.app/reply-stream");
-
-    eventSource.onmessage = (event) => {
-      console.log("Received Telegram reply:", event.data);
-      const botMessage = { role: "assistant", content: event.data };
-      setMessages((prev) => [...prev, botMessage]);
-    };
-
-eventSource.onopen = () => {
-  console.log("SSE connection established.");
-};
-    eventSource.onerror = (err) => {
-      console.log("SSE error.", JSON.stringify(err));
-      eventSource.close();
-    };
-
-    return () => {
-      eventSource.close();
-    };
-  }, []);
-
   const sendMessage = async () => {
     if (!input.trim()) return;
 
@@ -48,7 +25,7 @@ eventSource.onopen = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("https://cef6-71-212-135-152.ngrok-free.app/chat", {
+      const res = await fetch("https://94b9-71-212-135-152.ngrok-free.app/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: input }),
@@ -74,11 +51,11 @@ eventSource.onopen = () => {
         <Helmet>
           <meta charSet="utf-8" />
           <title>{meta.title} | Chat</title>
-          <meta name="description" content="Chat with WendyBot" />
+          <meta name="description" content="Ask Me Anything" />
         </Helmet>
         <Row className="mb-5 mt-3 pt-md-3">
           <Col lg="8">
-            <h1 className="display-4 mb-4">Chat with WendyBot</h1>
+            <h1 className="display-4 mb-4">Ask Me Anything</h1>
             <hr className="t_border my-4 ml-0 text-left" />
           </Col>
         </Row>
