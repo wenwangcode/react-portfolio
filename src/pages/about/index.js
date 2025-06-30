@@ -19,81 +19,43 @@ export const About = () => {
           <title> About | {meta.title}</title>
           <meta name="description" content={meta.description} />
         </Helmet>
-        <Row className="mb-5 mt-3 pt-md-3">
-          <Col lg="8">
-            <h1 className="display-4 mb-4">About me</h1>
-            <hr className="t_border my-4 ml-0 text-left" />
-          </Col>
-        </Row>
-        <Row className="sec_sp">
-          <Col lg="5">
-            <h3 className="color_sec py-4">{dataabout.title}</h3>
-          </Col>
-          <Col lg="7" className="d-flex align-items-center">
-            <div>
-              <p>{dataabout.aboutme}</p>
-            </div>
-          </Col>
-        </Row>
-        <Row className=" sec_sp">
-          <Col lg="5">
-            <h3 className="color_sec py-4">Work Timline</h3>
-          </Col>
-          <Col lg="7">
-            <table className="table caption-top">
-              <tbody>
-                {worktimeline.map((data, i) => {
-                  return (
-                    <tr key={i}>
-                      <th scope="row">{data.jobtitle}</th>
-                      <td>{data.where}</td>
-                      <td>{data.date}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </Col>
-        </Row>
-        <Row className="sec_sp">
-          <Col lg="5">
-            <h3 className="color_sec py-4">Skills</h3>
-          </Col>
-          <Col lg="7">
-            {skills.map((data, i) => {
-              return (
-                <div key={i}>
-                  <h3 className="progress-title">{data.name}</h3>
-                  <div className="progress">
-                    <div
-                      className="progress-bar"
-                      style={{
-                        width: `${data.value}%`,
-                      }}
-                    >
-                      <div className="progress-value">{data.value}%</div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </Col>
-        </Row>
-        <Row className="sec_sp">
-          <Col lang="5">
-            <h3 className="color_sec py-4">services</h3>
-          </Col>
-          <Col lg="7">
-            {services.map((data, i) => {
-              return (
-                <div className="service_ py-4" key={i}>
-                  <h5 className="service__title">{data.title}</h5>
-                  <p className="service_desc">{data.description}</p>
-                </div>
-              );
-            })}
-          </Col>
-        </Row>
+      <Row className="sec_sp">
+  <Col lg="5">
+    <h3 className="color_sec py-4">Featured In</h3>
+  </Col>
+  <Col lg="7">
+    <div className="book-feature">
+      <img
+              src="https://dl.dropboxusercontent.com/scl/fi/y7qqw8q7mb1vzc5rdvwz4/WomenOfMSCover.jpeg?rlkey=gficukqjchr9a1p4qccx9oho5&st=10yh07my"
+              alt="The Women of Microsoft Book Cover"
+              style={{
+                maxWidth: "300px",
+                width: "100%",
+                borderRadius: "8px",
+                boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
+                marginTop: "1rem",
+              }}
+            />
+      <div className="book-details">
+        <h4>The Women of Microsoft: Empowering Stories from the Minds that Coded the World</h4>
+        <p>
+          I'm honored to be featured in this inspiring book, sharing my story as both a pianist and software engineer. 
+          Published by Wiley, this book celebrates the brilliant women shaping technology at Microsoft.
+        </p>
+        <a
+          href="https://a.co/d/c7KLzY0"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-primary mt-2"
+        >
+          Learn More
+        </a>
+      </div>
+    </div>
+  </Col>
+</Row>
+
+
       </Container>
     </HelmetProvider>
   );
